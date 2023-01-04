@@ -1,0 +1,50 @@
+<%- include("partials/header") -%> 
+
+<h1>Home</h1>
+
+<p class="defaultCont"><%= homeCont %><a href="/compose">Compose</a>
+</p>
+
+<h2>User Posts</h2>
+
+<div class="container">
+
+    <% userPosts.forEach(userPost => {%>
+        <div class="bg-light">
+            <h3><%= userPost.title%></h3>
+            <p class="userPost"><%= `${userPost.post.substring(0, 100)} ...` %></p>
+            <div class="handlers d-flex justify-content-between mb-3">
+                <a class="btn btn-primary btn-sm" href=<%= `/posts/${userPost.title.replace(/\s+/g, '-').toLowerCase()}`%>>Read More</a>
+                <button type="submit" class="btn btn-danger btn-sm" name="toDelete" value=<%= `${userPost.title.replace(/\s+/g, '-').toLowerCase()}`%>>Delete</button>
+            </div>
+        </div>
+    <%});%>
+</div>
+
+<script>
+    const deleteBs = Array.prototype.slice.call(document.querySelectorAll("button.btn-danger"));
+
+    deleteBs.map(deleteB => {
+
+        const divContainer = deleteB.parentElement.parentElement;
+
+        deleteB.addEventListener("click", e => {
+
+                const name = deleteB.name;
+                const value = e.target.value;
+
+                fetch(window.location + "delete", {
+                    method: "post",
+                    headers: {
+                        "Content-Type" : "application/json"
+                    },
+                    body: JSON.stringify({
+                        name: value
+                    })
+                })
+                    .then(() => divContainer.remove());
+            });
+    });
+</script>
+
+<%- include("partials/footer") -%>
